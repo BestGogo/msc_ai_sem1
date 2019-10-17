@@ -2,7 +2,9 @@ import numpy as np
 from compute_cost import *
 from plot_hypothesis import *
 from plot_cost import *
-
+import matplotlib
+import time
+matplotlib.use( 'tkagg' )
 def gradient_descent(X, y, theta, alpha, iterations, do_plot):
     """
         :param X            : 2D array of our dataset
@@ -31,6 +33,7 @@ def gradient_descent(X, y, theta, alpha, iterations, do_plot):
         sigma = 0.0
         for i in range(m):
             hypothesis = X[i, 0] * theta[0] + X[i, 1] * theta[1]
+            # hypothesis = calculate_hypothesis(X, theta, i)
             #########################################
             # Write your code here
             # Replace the above line that calculates the hypothesis, with a call to the "calculate_hypothesis" function
@@ -44,6 +47,7 @@ def gradient_descent(X, y, theta, alpha, iterations, do_plot):
         sigma = 0.0
         for i in range(m):
             hypothesis = X[i,0] * theta[0] + X[i,1] * theta[1]
+            # hypothesis = calculate_hypothesis(X, theta, i)
             #########################################
             # Write your code here
             # Replace the above line that calculates the hypothesis, with a call to the "calculate_hypothesis" function
@@ -63,6 +67,7 @@ def gradient_descent(X, y, theta, alpha, iterations, do_plot):
         # plot predictions for current iteration
         if do_plot==True:
             plot_hypothesis(X, y, theta, ax1)
+            time.sleep(0.2)
     ####################################################
     
     # plot predictions using the final parameters
