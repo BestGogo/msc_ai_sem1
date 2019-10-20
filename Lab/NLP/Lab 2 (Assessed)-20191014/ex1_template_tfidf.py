@@ -109,11 +109,7 @@ total_no_of_reviews = len(rawData)
 print(total_no_of_words,total_no_of_reviews)
 
 for k,v in featureDict.items():
-  count = 0
-  for line in rawData:
-    if k in line:
-      count = count+1
-  featureDict_new[k] = (v/total_no_of_words)*math.log(float(1 + total_no_of_reviews) / (1 + count))
+	featureDict_new[k] = (float(v)/total_no_of_words)*math.log(float(total_no_of_reviews) / v)
 
 print("Built new feature dict")
 import numpy as np
