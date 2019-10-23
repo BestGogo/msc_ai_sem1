@@ -17,8 +17,8 @@ def calculate_hypothesis(X, theta, i):
     #hypothesis = theta
     # print(theta[0],theta[1])
     # print(X[0])
-    hypothesis = np.multiply(theta[0],X[i, 0]) + np.multiply(theta[1],X[i, 1])
-    #hypothesis = X[i, 0] * theta[0] + X[i, 1] * theta[1]
+    #hypothesis = np.multiply(theta[0],X[i, 0]) + np.multiply(theta[1],X[i, 1])
+    # hypothesis = X[i, 0] * theta[0] + X[i, 1] * theta[1]
     #hypothesis = theta[0]*X[0] + theta[1]*X[1]
     print(hypothesis)
     #time.sleep(1)

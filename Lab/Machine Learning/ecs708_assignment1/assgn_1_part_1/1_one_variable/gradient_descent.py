@@ -33,7 +33,7 @@ def gradient_descent(X, y, theta, alpha, iterations, do_plot):
         sigma = 0.0
         for i in range(m):
             hypothesis = X[i, 0] * theta[0] + X[i, 1] * theta[1]
-            # hypothesis = calculate_hypothesis(X, theta, i)
+            hypothesis = calculate_hypothesis(X, theta, i)
             #########################################
             # Write your code here
             # Replace the above line that calculates the hypothesis, with a call to the "calculate_hypothesis" function
@@ -47,7 +47,7 @@ def gradient_descent(X, y, theta, alpha, iterations, do_plot):
         sigma = 0.0
         for i in range(m):
             hypothesis = X[i,0] * theta[0] + X[i,1] * theta[1]
-            # hypothesis = calculate_hypothesis(X, theta, i)
+            hypothesis = calculate_hypothesis(X, theta, i)
             #########################################
             # Write your code here
             # Replace the above line that calculates the hypothesis, with a call to the "calculate_hypothesis" function
