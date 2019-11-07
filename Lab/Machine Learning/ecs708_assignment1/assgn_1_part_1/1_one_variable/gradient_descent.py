@@ -32,13 +32,8 @@ def gradient_descent(X, y, theta, alpha, iterations, do_plot):
         # update temporary variable for theta_0
         sigma = 0.0
         for i in range(m):
-            hypothesis = X[i, 0] * theta[0] + X[i, 1] * theta[1]
+            #hypothesis = X[i, 0] * theta[0] + X[i, 1] * theta[1]
             hypothesis = calculate_hypothesis(X, theta, i)
-            #########################################
-            # Write your code here
-            # Replace the above line that calculates the hypothesis, with a call to the "calculate_hypothesis" function
-            
-            ########################################/
             output = y[i]
             sigma = sigma + (hypothesis - output)
         theta_0 = theta_0 - (alpha/m) * sigma
@@ -46,13 +41,8 @@ def gradient_descent(X, y, theta, alpha, iterations, do_plot):
         # update temporary variable for theta_1
         sigma = 0.0
         for i in range(m):
-            hypothesis = X[i,0] * theta[0] + X[i,1] * theta[1]
+            # hypothesis = X[i,0] * theta[0] + X[i,1] * theta[1]
             hypothesis = calculate_hypothesis(X, theta, i)
-            #########################################
-            # Write your code here
-            # Replace the above line that calculates the hypothesis, with a call to the "calculate_hypothesis" function
-            
-            ########################################/
             output = y[i]
             sigma = sigma + (hypothesis - output) * X[i, 1]
         theta_1 = theta_1 - (alpha/m) * sigma
@@ -67,7 +57,7 @@ def gradient_descent(X, y, theta, alpha, iterations, do_plot):
         # plot predictions for current iteration
         if do_plot==True:
             plot_hypothesis(X, y, theta, ax1)
-            time.sleep(0.2)
+            #time.sleep(0.2)
     ####################################################
     
     # plot predictions using the final parameters
