@@ -1,0 +1,6 @@
+This will be written to the text file
+0-5-10--1-5-3-4-6 [MCTS,RuleBased,RHEA,Player_AA_uct]
+1573158713549, 83619, 0/50, [LOSS (0), LOSS (0), LOSS (0), WIN (1)]
+1573158735208, 83619, 1/50, [WIN (0), LOSS (0), LOSS (0), LOSS (1)]
+1573158751993, 83619, 2/50, [TIE (0), LOSS (0), LOSS (0), TIE (1)]
+1573158769860, 83619, 3/50, 
