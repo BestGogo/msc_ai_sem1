@@ -21,9 +21,9 @@ X_train, y_train, X_test, y_test = return_test_set(X, y)
 X_train_normalized, mean_vec, std_vec = normalize_features(X_train)
 X_test_normalized = normalize_features(X_test, mean_vec, std_vec)
 
-hidden_neurons = 2
-learning_rate = 1.0
-iterations = 100
+hidden_neurons = 2	
+learning_rate = .1
+iterations = 1000
 is_iris = True
 
 errors, nn, cost_train, cost_test = train(X_train_normalized, y_train, hidden_neurons, iterations, learning_rate, X_test_normalized, y_test, is_iris)

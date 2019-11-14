@@ -3,6 +3,7 @@ from compute_cost import *
 from plot_hypothesis import *
 from plot_cost import *
 from calculate_hypothesis import *
+import time
 
 def gradient_descent(X, y, theta, alpha, iterations, do_plot):
     """
@@ -27,27 +28,16 @@ def gradient_descent(X, y, theta, alpha, iterations, do_plot):
         
         # initialize temporary theta, as a copy of the existing theta array
         theta_temp = theta.copy()
-        
+        # print(len(theta_temp))
         sigma = np.zeros((len(theta)))
-        for i in range(m):
-            #########################################
-            # Write your code here
-            # Calculate the hypothesis for the i-th sample of X, with a call to the "calculate_hypothesis" function
-            
-            ########################################/
-            output = y[i]
-            #########################################
-            # Write your code here
-            # Adapt the code, to compute the values of sigma for all the elements of theta
-            
-            ########################################/
-        
-        # update theta_temp
-        #########################################
-        # Write your code here
-        # Update theta_temp, using the values of sigma
-        
-        ########################################/
+        # print(sigma)
+        for index in range(len(theta_temp)): 
+            for i in range(m):
+                hypothesis = calculate_hypothesis(X, theta, i)
+                output = y[i]
+                sigma[index] = sigma[index] + (hypothesis - output) * X[i, index]
+
+            theta_temp[index] = theta_temp[index] - (alpha/m) * sigma[index]
         # copy theta_temp to theta
         theta = theta_temp.copy()
         

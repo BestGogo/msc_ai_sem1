@@ -24,7 +24,7 @@ X_normalized = np.append(column_of_ones, X_normalized, axis=1)
 
 # initialise trainable parameters theta, set learning rate alpha and number of iterations
 theta = np.zeros((3))
-alpha = 1.0
+alpha = 1
 iterations = 100
 
 # call the gradient descent function to obtain the trained parameters theta_final and the cost vector

@@ -30,8 +30,8 @@ def main():
 
     # initialise trainable parameters theta, set learning rate alpha, regularization parameter l and number of iterations
     theta = np.zeros((6))
-    alpha = 1.0
-    l = 0.0
+    alpha = 1.015
+    l = 500.0                                              
     iterations = 200
 
     # plot predictions for every iteration?
@@ -39,7 +39,7 @@ def main():
 
     # call the gradient descent function to obtain the trained parameters theta_final
     # you will need to modify the gradient_descent function to accept an additional argument lambda (l)
-    theta_final = gradient_descent(X, y, theta, alpha, iterations, do_plot)
+    theta_final = gradient_descent(X, y, theta, alpha, l, iterations, do_plot)
 
 if __name__ == '__main__':
     main()

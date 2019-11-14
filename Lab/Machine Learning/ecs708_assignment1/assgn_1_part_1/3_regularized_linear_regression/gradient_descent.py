@@ -6,7 +6,7 @@ from plot_sampled_points import *
 from plot_cost import *
 from calculate_hypothesis import *
 
-def gradient_descent(X, y, theta, alpha, iterations, do_plot):
+def gradient_descent(X, y, theta, alpha, l, iterations, do_plot):
     """
         :param X            : 2D array of our dataset
         :param y            : 1D array of the groundtruth labels of the dataset
@@ -33,32 +33,21 @@ def gradient_descent(X, y, theta, alpha, iterations, do_plot):
         theta_temp = theta.copy()
         
         sigma = np.zeros((len(theta)))
-        for i in range(m):
-            #########################################
-            # Write your code here
-            # Calculate the hypothesis for the i-th sample of X, with a call to the "calculate_hypothesis" function
-            
-            ########################################/
-            output = y[i]
-            #########################################
-            # Write your code here
-            # Adapt the code, to compute the values of sigma for all the elements of theta
-            
-            ########################################/
-        
-        # update theta_temp
-        #########################################
-        # Write your code here
-        # Update theta_temp, using the values of sigma
-        # Make sure to use lambda, if necessary
-        
-        ########################################/
-        
+        for index in range(len(theta_temp)): 
+            for i in range(m):
+                hypothesis = calculate_hypothesis(X, theta, i)
+                output = y[i]
+                sigma[index] = sigma[index] + (hypothesis - output) * X[i, index]
+
+            theta_temp[index] = theta_temp[index] - (alpha/m) * sigma[index]
         # copy theta_temp to theta
         theta = theta_temp.copy()
         
+        
         # append current iteration's cost to cost_vector
-        iteration_cost = compute_cost(X, y, theta)
+        # iteration_cost = compute_cost(X, y, theta)
+        # iteration_cost = compute_cost_regularised(X, y, theta, l)
+        iteration_cost = compute_cost_regularised_new(X, y, theta, alpha, l)
         cost_vector = np.append(cost_vector, iteration_cost)
         
         # plot predictions for current iteration

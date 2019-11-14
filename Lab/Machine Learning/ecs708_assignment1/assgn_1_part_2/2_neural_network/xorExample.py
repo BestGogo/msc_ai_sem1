@@ -13,11 +13,24 @@ X = np.array([[0, 0],
               [1, 1]
               ])
 
-y = np.array([0, 1, 1, 0])
+y_XOR = np.array([0, 1, 1, 0])
+y_NOR = np.array([1, 0, 0, 0])
+y_AND = np.array([0, 0 ,0 ,1])
+y = y_AND
 
 n_hidden = 2
 iterations = 10000
-learning_rate = 1.0
+learning_rate = 0.1
+
+# alpha = 0.1
+# Sample #01 | Target value: 0.00 | Predicted value: 0.05508
+# Sample #02 | Target value: 1.00 | Predicted value: 0.94994
+# Sample #03 | Target value: 1.00 | Predicted value: 0.94981
+# Sample #04 | Target value: 0.00 | Predicted value: 0.05371
+# Minimum cost: 0.00548, on iteration #10000
+
+
+
 
 # Train the neural network on the XOR problem
 # For now, we will not use the 3rd and 4th outputs of the function, hence we use "_" on the returned outputs

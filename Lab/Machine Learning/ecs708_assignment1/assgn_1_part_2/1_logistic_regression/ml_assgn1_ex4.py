@@ -3,7 +3,7 @@ from normalize_features import *
 from gradient_descent_training import *
 from return_test_set import *
 import matplotlib.pyplot as plt
-import os
+import os,sys
 
 figures_folder = os.path.join(os.getcwd(), 'figures')
 if not os.path.exists(figures_folder):
@@ -20,6 +20,12 @@ X, y = load_data_ex1()
 # Append columns of the new features to the dataset, to the dimension of columns (i.e., 1)
 
 ########################################/
+X_cube = np.power(X,3)
+X = np.append(X, np.square(X),axis =1)
+X = np.append(X, (X[:,1]*X[:,0]).reshape(X.shape[0],1),axis =1)
+X = np.append(X, X_cube,axis =1)
+print(X.shape)
+
 
 # split the dataset into training and test set, using random shuffling
 train_samples = 20
@@ -43,7 +49,7 @@ X_test_normalized = np.append(column_of_ones, X_test_normalized, axis=1)
 # Write your code here
 
 ########################################/
-
+theta = np.zeros(8)
 # Set learning rate alpha and number of iterations
 alpha = 1.0
 iterations = 100

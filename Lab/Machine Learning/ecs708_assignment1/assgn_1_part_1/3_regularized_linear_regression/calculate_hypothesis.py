@@ -12,5 +12,5 @@ def calculate_hypothesis(X, theta, i):
     # You must calculate the hypothesis for the i-th sample of X, given X, theta and i.
     
     ########################################/
-    
+    hypothesis = np.dot(X[i],theta)
     return hypothesis

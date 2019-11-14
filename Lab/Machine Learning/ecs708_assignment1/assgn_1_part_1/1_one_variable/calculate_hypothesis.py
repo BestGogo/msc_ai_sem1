@@ -16,5 +16,6 @@ def calculate_hypothesis(X, theta, i):
     #########################################
     #x1 = np.array([1, 5])
     # hypothesis = np.dot(x1,theta)
+    # print("X",X[i])#,theta)
     hypothesis = np.dot(X[i],theta)
     return hypothesis

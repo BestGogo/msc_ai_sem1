@@ -1,7 +1,7 @@
 import numpy as np
 from sigmoid import *
 from sigmoid_derivative import *
-
+import sys,time
 class NeuralNetwork():
     def __init__(self,
                  n_in,
@@ -65,8 +65,7 @@ class NeuralNetwork():
         return predictions
     
     def backward_pass(self, inputs, targets, learning_rate):
-        # We will backpropagate the error and perform gradient descent on the network weights
-        
+        # We will backpropagate the error and perform gradient descent on the network weights        
         # We compute the error between predictions and targets
         J = 0.5 * np.sum( np.power(self.y_out - targets, 2) )
         
@@ -74,44 +73,38 @@ class NeuralNetwork():
         inputs = np.append(1, inputs)
         
         # Step 1. Output deltas are used to update the weights of the output layer
+        # print(type(targets))
+        # sys.exit(0)
         output_deltas = np.zeros((self.n_out))
         outputs = self.y_out.copy()
-
         for i in range(self.n_out):
-            #########################################
-            # Write your code here
             # compute output_deltas : delta_k = (y_k - t_k) * g'(x_k)
-            
             # output_deltas[i] = ...
-            ########################################/
+            if type(targets) is np.int64: 
+                output_deltas[i] = (outputs[i] - targets) * sigmoid_derivative(outputs[i])
+            else:
+                if len(targets) > 1:
+                    output_deltas[i] = (outputs[i] - targets[i]) * sigmoid_derivative(outputs[i])
         
         # Step 2. Hidden deltas are used to update the weights of the hidden layer
+
         hidden_deltas = np.zeros((len(self.y_hidden)))
         
         # Create a for loop, to iterate over the hidden neurons.
         # Then, for each hidden neuron, create another for loop, to iterate over the output neurons
-        for i in range(len(hidden_deltas)):
-            #########################################
-            # Write your code here
-            # compute hidden_deltas
-            
-            #...
-            #...
-            #...
-            #hidden_deltas[i] = ...
-            
-            ########################################/
-
+        for j in range(len(hidden_deltas)):
+            hidden_error_weight = 0.0
+            for k in range(self.n_out):
+                hidden_error_weight += self.w_out[j,k]* output_deltas[k]
+            hidden_deltas[j] = sigmoid_derivative(self.y_hidden[j]) * hidden_error_weight
+   
         # Step 3. update the weights of the output layer
+        
         for i in range(len(self.y_hidden)):
             for j in range(len(output_deltas)):
-                #########################################
-                # Write your code here
                 # update the weights of the output layer
-                
-                # self.w_out[i,j] = ...
-                ########################################/
-        
+                self.w_out[i,j] = self.w_out[i,j] - (learning_rate * output_deltas[j] * self.y_hidden[i]) #sigmoid(self.y_hidden[i]))
+
         # we will remove the bias that was appended to the hidden neurons, as there is no
         # connection to it from the hidden layer
         # hence, we also have to keep only the corresponding deltas
@@ -120,13 +113,10 @@ class NeuralNetwork():
         # Step 4. update the weights of the hidden layer
         # Create a for loop, to iterate over the inputs.
         # Then, for each input, create another for loop, to iterate over the hidden deltas
+
         for i in range(len(inputs)):
             for j in range(len(hidden_deltas)):
-                #########################################
-                # Write your code here
                 # update the weights of the hidden layer
-                
-                # self.w_hidden[i,j] = ...
-                ########################################/
-        
+                # self.w_hidden[i,j] = self.w_hidden[i,j] - (learning_rate * hidden_deltas[j] * sigmoid_derivative(inputs[i]))
+                self.w_hidden[i,j] = self.w_hidden[i,j] - (learning_rate * hidden_deltas[j] * inputs[i]) #sigmoid(inputs[i]))
         return J

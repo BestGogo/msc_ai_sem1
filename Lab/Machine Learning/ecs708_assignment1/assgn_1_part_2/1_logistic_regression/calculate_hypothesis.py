@@ -13,6 +13,7 @@ def calculate_hypothesis(X, theta, i):
     # You must calculate the hypothesis for the i-th sample of X, given X, theta and i.
     
     ########################################/
+    hypothesis = np.matmul(X[i],theta)
     result = sigmoid(hypothesis)
     
     return result

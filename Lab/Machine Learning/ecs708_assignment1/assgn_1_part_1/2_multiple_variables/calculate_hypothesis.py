@@ -12,5 +12,7 @@ def calculate_hypothesis(X, theta, i):
     # You must calculate the hypothesis for the i-th sample of X, given X, theta and i.
     
     ########################################/
-    
+    # print(X[i].shape)#,theta)
+    # hypothesis = X[i,0] * theta[0] + X[i,1] * theta[1] + X[i,2] * theta[2]
+    hypothesis = np.dot(X[i],theta)
     return hypothesis
