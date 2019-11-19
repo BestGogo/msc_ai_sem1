@@ -13,14 +13,6 @@ if not os.path.exists(figures_folder):
 # This loads our data
 X, y = load_data_ex1()
 
-# Create the features x1*x2, x1^2 and x2^2
-#########################################
-# Write your code here
-# Compute the new features
-# Insert extra singleton dimension, to obtain Nx1 shape
-# Append columns of the new features to the dataset, to the dimension of columns (i.e., 1)
-
-########################################/
 X = np.append(X, np.square(X),axis =1)
 X = np.append(X, (X[:,1]*X[:,0]).reshape(X.shape[0],1),axis =1)
 
@@ -32,11 +24,7 @@ column_of_ones = np.ones((X_normalized.shape[0], 1))
 # append column to the dimension of columns (i.e., 1)
 X_normalized = np.append(column_of_ones, X_normalized, axis=1)
 
-# Initialise trainable parameters theta
-#########################################
-# Write your code here
 
-########################################/
 theta = np.zeros((6))
 # Set learning rate alpha and number of iterations
 alpha = 1.0
@@ -63,5 +51,5 @@ plot_boundary(X_normalized, theta_final, ax1)
 plot_filename = os.path.join(os.getcwd(), 'figures', 'ex3_decision_boundary.png')
 plt.savefig(plot_filename)
 
-plt.ioff()
-plt.show()
+# plt.ioff()
+# plt.show()
