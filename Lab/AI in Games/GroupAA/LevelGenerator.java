@@ -75,7 +75,16 @@ public class LevelGenerator implements MarioLevelGenerator {
         System.out.println(num);
         return traindata;
     }
-//    public void markovchain (int x, int y)
+    public char[] dependencies(int x, int y, char[][] data){
+        char[] depends = new char[3];
+        depends[0] = data[x-1][y];
+        depends[1] = data[x-1][y-1];
+        depends[2] = data[x][y-1];
+        return depends;
+    }
+    public void markovchain (int x, int y, char[][][] data, char[][] level){
+        char[] dependent_items = dependencies(x,y,level);
+    }
     public static void main(String[] args) throws IOException {
        char[][][] traindata = generateTraindata(type,NTD);
        int num_train_levels = NTD*2;

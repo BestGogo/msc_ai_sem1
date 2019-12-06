@@ -142,15 +142,15 @@ public class HeuristicsAA extends StateHeuristic {
                         if(future.items.get(Types.TILETYPE.PASSAGE)==null){
                             return -10;
                         }
-                        for (Vector2d V : future.items.get(Types.TILETYPE.PASSAGE)) {
-                            if (future.dist.containsKey(V)) {
-                                floodAreaList.add(V);
-                            }
-                        }
-                        double FactorSafe = emptySafe(floodAreaList,future);
-                        if(FactorSafe < 4){
-                            return EvadeScoreFunction(future);
-                        }
+//                        for (Vector2d V : future.items.get(Types.TILETYPE.PASSAGE)) {
+//                            if (future.dist.containsKey(V)) {
+//                                floodAreaList.add(V);
+//                            }
+//                        }
+//                        double FactorSafe = emptySafe(floodAreaList,future);
+//                        if(FactorSafe < 4){
+//                            return EvadeScoreFunction(future);
+//                        }
                         return AttackScoreFunction(future); // return attack policy
 
                     }
