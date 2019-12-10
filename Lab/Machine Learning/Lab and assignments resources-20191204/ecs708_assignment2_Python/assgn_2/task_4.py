@@ -69,18 +69,44 @@ print('f2 range: {}-{} | {} points'.format(min_f2, max_f2, N_f2))
 #########################################
 # Write your code here
 
-custom_grid = np.zeros((N_f1,N_f2))
+
 # Create a custom grid of shape N_f1 x N_f2
+custom_grid = np.zeros((N_f1,N_f2,2))
 # The grid will span all the values of (f1, f2) pairs, between [min_f1, max_f1] on f1 axis, and between [min_f2, max_f2] on f2 axis
 # Then, classify each point [i.e., each (f1, f2) pair] of that grid, to either phoneme 1, or phoneme 2, using the two trained GMMs
+for i in range(N_f1):
+    for j in range(N_f2):
+        custom_grid[i][j] = [int(i + min_f1),(j + min_f2)]
+
 # Do predictions, using GMM trained on phoneme 1, on custom grid
 # Do predictions, using GMM trained on phoneme 2, on custom grid
+
+
+def get_predicted_value(k,gird_val):
+	path_01 = 'data/GMM_params_phoneme_01_k_0' + str(k) + '.npy'
+	data_phoneme_01 = np.load(path_01, allow_pickle=True)
+	data_phoneme_01 = np.ndarray.tolist(data_phoneme_01)
+	# Loading data for phoneme = 2
+	path_02 = 'data/GMM_params_phoneme_02_k_0' + str(k) + '.npy'
+	data_phoneme_02 = np.load(path_02, allow_pickle=True)
+	data_phoneme_02 = np.ndarray.tolist(data_phoneme_02)
+	Z_phoneme_01 = get_predictions(data_phoneme_01['mu'], data_phoneme_01['s'], data_phoneme_01['p'], gird_val)
+	Z_phoneme_02 = get_predictions(data_phoneme_02['mu'], data_phoneme_02['s'], data_phoneme_02['p'], gird_val)
+	predicted_values = np.ndarray(shape=(len(Z_phoneme_01)))
+	for i in range(len(Z_phoneme_01)):
+		if sum(Z_phoneme_01[i]) > sum(Z_phoneme_02[i]):
+			predicted_values[i] = 0.0
+		else:
+			predicted_values[i] = 1.0
+	return predicted_values
 # Compare these predictions, to classify each point of the grid
 # Store these prediction in a 2D numpy array named "M", of shape N_f2 x N_f1 (the first dimension is f2 so that we keep f2 in the vertical axis of the plot)
+M = np.ndarray(shape=(N_f2, N_f1))
+for i in range(0,N_f2):
+	M[i,:] = get_predicted_value(3, custom_grid[:,i])
 # M should contain "0.0" in the points that belong to phoneme 1 and "1.0" in the points that belong to phoneme 2
 ########################################/
-print(custom_grid.shape)
-print("X",X[190])
+
 ################################################
 # Visualize predictions on custom grid
 

@@ -34,6 +34,9 @@ X_full = np.zeros((len(f1), 3))
 #########################################
 # Write your code here
 # Store f1 in the first column of X_full, f2 in the second column of X_full and f1+f2 in the third column of X_full
+X_full[:,0] = f1
+X_full[:,1] = f2
+X_full[:,2] = f1+f2
 
 ########################################/
 X_full = X_full.astype(np.float32)
@@ -53,7 +56,9 @@ k = 3
 # To fill X_phoneme, you can leverage the phoneme_id array, that contains the ID of each sample of X_full
 
 # X_phoneme = ...
+X_phoneme = np.zeros((np.sum(phoneme_id==p_id), 2))
 
+X_phoneme = X_full[phoneme_id==p_id,:]
 ########################################/
 
 ################################################
@@ -127,7 +132,12 @@ for t in range(n_iter):
         #########################################
         # Write your code here
         # Suggest ways of overcoming the singularity
-
+        if scipy.linalg.det(s[i,:,:]) == 0.0:
+            # np.random.randint(N,size=k)
+            # mu[i, :] = X[random_indices[i], :]
+            np.fill_diagonal(s, np.random.normal(s.diagonal()+np.random.randint(10,20),np.random.randint(10,20)))
+            # s[i, :, :] = cov_matrix / k
+        
         ########################################/
         p[i] = np.mean(Z[:,i])
     ax1.clear()

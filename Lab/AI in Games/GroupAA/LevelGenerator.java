@@ -5,7 +5,7 @@ import engine.helper.MarioTimer;
 import levelGenerators.MarioLevelGenerator;
 
 import java.io.*;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class LevelGenerator implements MarioLevelGenerator {
@@ -20,10 +20,10 @@ public class LevelGenerator implements MarioLevelGenerator {
         this.type = type;
     }
 
-    public static char[][][] generateTraindata(int type, int kitna) throws IOException {
+    public static char[][][] generateTrainData(int type, int kitna) throws IOException {
         String path = new String();
         String read_data = new String();
-        char[][][] traindata = new char[rows][columns][kitna*2];
+        char[][][] traindata = new char[rows][columns][kitna];
         int r = 0;
         int c = 0;
         int num = 0;
@@ -75,6 +75,7 @@ public class LevelGenerator implements MarioLevelGenerator {
         System.out.println(num);
         return traindata;
     }
+
     public char[] dependencies(int x, int y, char[][] data){
         char[] depends = new char[3];
         depends[0] = data[x-1][y];
@@ -82,12 +83,50 @@ public class LevelGenerator implements MarioLevelGenerator {
         depends[2] = data[x][y-1];
         return depends;
     }
-    public void markovchain (int x, int y, char[][][] data, char[][] level){
-        char[] dependent_items = dependencies(x,y,level);
+    public double[] markovchain (int x, int y, char[][][] data, char[][] level){
+        char[] dependence_items = dependencies(x,y,level);
+        int n_dependence = dependence_items.length;
+        double[] P = new double[n_dependence];
+        double P_Total=0;
+        int index;
+        int n_iterations = data[0][0].length;
+        for(int n = 0; n<n_iterations; n++){
+            if(Arrays.asList(dependence_items).contains(data[x][y][n])){
+                index = Arrays.asList(dependence_items).indexOf(data[x][y][n]);
+                P[index]++;
+            }
+            P_Total++;
+        }
+        for(int in=0;in<P.length;in++){
+          P[in] = P[in] / P_Total;
+        }
+        return P;
     }
+    public double[] Probability_Distribution(char[][][] data){
+      long len = MarioLevelModel.getAllTiles().length;
+      char[] tiles = MarioLevelModel.getAllTiles();
+      double[][][] Prob_dist= new double[rows][columns][len];
+      double total = 0;
+      for(int x=0; x < rows; x++){
+        for(int y=0; y < columns; y++){
+          for(int n=0; n < data[0][0].length; n++){
+            if(Arrays.asList(tiles).contains(data[x][y][n])){
+              Prob_dist[x][y][Arrays.asList(tiles).indexOf(data[x][y][n])]++;
+            }
+            total++;
+          }
+        }
+      }
+      for(int i=0;i<Prob_dist.length;i++){
+        Prob_dist[i] = Prob_dist[i]/total; // probably we cant do this in java....gotta run a for loop?
+      }
+    }
+    public double probability_estimation(int x, int y, )//estimation done bruh...in the markovchain
+    // did you solve the left right and up case?
+
     public static void main(String[] args) throws IOException {
-       char[][][] traindata = generateTraindata(type,NTD);
-       int num_train_levels = NTD*2;
+       char[][][] traindata = generateTrainData(type,NTD);
+       int num_train_levels = NTD;
        for(int a=0;a<num_train_levels;a++) {
            System.out.println("file" + (a+1));
            for(int b=0;b<rows;b++) {
@@ -109,3 +148,4 @@ public class LevelGenerator implements MarioLevelGenerator {
         return "GroupAA Level Generator";
     }
 }
+
