@@ -11,7 +11,7 @@ from sklearn.metrics import classification_report, confusion_matrix, accuracy_sc
 from sklearn import model_selection
 from scipy.sparse import coo_matrix
 
-from classifier import Classifier
+from fullClassifier import Classifier
 from Helper.DebugPrint import DebugPrint
 
 import matplotlib.pyplot as plt
