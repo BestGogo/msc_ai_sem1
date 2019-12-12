@@ -40,9 +40,9 @@ X_full = X_full.astype(np.float32)
 # We will train a GMM with k components, on a selected phoneme id which is stored in variable "p_id" 
 
 # number of GMM components
-k = 3
+k = 6
 # you can use the p_id variable, to store the ID of the chosen phoneme that will be used (e.g. phoneme 1, or phoneme 2)
-p_id = 2
+p_id = 1
 
 #########################################
 # Write your code here

@@ -20,16 +20,45 @@ data_npy_file = 'data/PB_data.npy'
 data = np.load(data_npy_file, allow_pickle=True)
 data = np.ndarray.tolist(data)
 
+def load_data(k):
+	# File that contain trained model 
+	data_npy_phoneme_01 = 'data/GMM_params_phoneme_01_k_0'+str(k)+'.npy'
+	data_npy_phoneme_02 = 'data/GMM_params_phoneme_02_k_0'+str(k)+'.npy'
+	
 
-# File that contain trained model 
-data_npy_phoneme_01 = 'data/GMM_params_phoneme_01_k_03.npy'
-data_npy_phoneme_02 = 'data/GMM_params_phoneme_02_k_03.npy'
+	# Loading data from .npy file
+	model_phoneme_01 = np.ndarray.tolist(np.load(data_npy_phoneme_01, allow_pickle=True))
+	model_phoneme_02 = np.ndarray.tolist(np.load(data_npy_phoneme_02, allow_pickle=True))
+	return model_phoneme_01, model_phoneme_02
 
-# Loading data from .npy file
-model_phoneme_01 = np.ndarray.tolist(np.load(data_npy_phoneme_01, allow_pickle=True))
-model_phoneme_02 = np.ndarray.tolist(np.load(data_npy_phoneme_02, allow_pickle=True))
-print(model_phoneme_01.keys())
 
+def get_pred(X, k, model1_weights, model2_weights):
+	predClass = []
+	N = X.shape[0]
+	Z01 = np.zeros((N,k)) # shape Nxk
+	Z02 = np.zeros((N,k)) # shape Nxk
+	
+	# get predictions on X from model1
+	Z01 = get_predictions(model1_weights['mu'], model1_weights['s'], model1_weights['p'], X)
+	# Z01 = normalize(Z01, axis=1, norm='l1')
+	Z01 = Z01.astype(np.float32)
+	Z01Sum = np.sum(Z01,axis=1)
+
+	# get predictions on X from model2 
+	Z02 = get_predictions(model2_weights['mu'], model2_weights['s'], model2_weights['p'], X)
+	# Z02 = normalize(Z02, axis=1, norm='l1')
+	Z02 = Z02.astype(np.float32)
+	Z02Sum = np.sum(Z02,axis=1)
+
+	# if sum of probabilities of any model is less than other mark it
+	for z1,z2 in zip(Z01Sum,Z02Sum):
+		if z1 > z2:
+			predClass.append(0.0)
+		else:
+			predClass.append(1.0)
+
+	y_pred = np.array(predClass)
+	return y_pred
 
 # Make a folder to save the figures
 figures_folder = os.path.join(os.getcwd(), 'figures')
@@ -53,7 +82,7 @@ X_full[:,1] = f2
 X_full = X_full.astype(np.float32)
 
 # number of GMM components
-k = 3
+k = 6
 
 #########################################
 # Write your code here
@@ -95,67 +124,16 @@ plt.savefig(plot_filename)
 # Compare these predictions for each sample of the dataset, and calculate the accuracy, and store it in a scalar variable named "accuracy"
 
 ########################################/
-################################################
-# Train a GMM with k components, on the chosen phoneme
-# mu s p from pretrained model_phoneme_01 and model_phoneme_01
-# as dataset X, we will use only the samples of the chosen phoneme
+
 X = X_phonemes_1_2.copy()
 # get number of samples
 N = X.shape[0]
 # get dimensionality of our dataset
 D = X.shape[1]
 
-# common practice : GMM weights initially set as 1/k
-# p = np.ones((k))/k
-p = model_phoneme_01['p']
-# GMM means are picked randomly from data samples
-random_indices = np.floor(N*np.random.rand((k)))
-random_indices = random_indices.astype(int)
-# mu = X[random_indices,:] # shape kxD
-mu = model_phoneme_01['mu']
-# covariance matrices
-# s = np.zeros((k,D,D)) # shape kxDxD
-s = model_phoneme_01['s']
+model_phoneme_01, model_phoneme_02 = load_data(k)
+y_pred = get_pred(X, k, model_phoneme_01, model_phoneme_02)
 
-Z01 = np.zeros((N,k)) # shape Nxk
-Z01 = get_predictions(mu, s, p, X)
-# Z01 = normalize(Z01, axis=1, norm='l1')
-Z01 = Z01.astype(np.float32)
-Z01Sum = np.sum(Z01,axis=1)
-
-# as dataset X, we will use only the samples of the chosen phoneme
-X = X_phonemes_1_2.copy()
-# get number of samples
-N = X.shape[0]
-# get dimensionality of our dataset
-D = X.shape[1]
-
-# common practice : GMM weights initially set as 1/k
-# p = np.ones((k))/k
-p = model_phoneme_02['p']
-# GMM means are picked randomly from data samples
-random_indices = np.floor(N*np.random.rand((k)))
-random_indices = random_indices.astype(int)
-# mu = X[random_indices,:] # shape kxD
-mu = model_phoneme_02['mu']
-# covariance matrices
-# s = np.zeros((k,D,D)) # shape kxDxD
-s = model_phoneme_02['s']
-
-Z02 = np.zeros((N,k)) # shape Nxk
-Z02 = get_predictions(mu, s, p, X)
-# Z02 = normalize(Z02, axis=1, norm='l1')
-Z02 = Z02.astype(np.float32)
-Z02Sum = np.sum(Z02,axis=1)
-predClass = []
-
-for z1,z2 in zip(Z01Sum,Z02Sum):
-	if z1 > z2:
-		predClass.append(0.0)
-	else:
-		predClass.append(1.0)
-
-y_pred = np.array(predClass)
 # print(y_pred)
 accuracy = accuracy_score(y_true,y_pred)
 

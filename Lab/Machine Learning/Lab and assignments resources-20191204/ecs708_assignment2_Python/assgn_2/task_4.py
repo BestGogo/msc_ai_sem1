@@ -83,24 +83,34 @@ for i in range(N_f1):
 
 
 def get_predicted_value(k,gird_val):
+	# Loading data for phoneme 1
 	path_01 = 'data/GMM_params_phoneme_01_k_0' + str(k) + '.npy'
 	data_phoneme_01 = np.load(path_01, allow_pickle=True)
 	data_phoneme_01 = np.ndarray.tolist(data_phoneme_01)
-	# Loading data for phoneme = 2
+	# Loading data for phoneme 2
 	path_02 = 'data/GMM_params_phoneme_02_k_0' + str(k) + '.npy'
 	data_phoneme_02 = np.load(path_02, allow_pickle=True)
 	data_phoneme_02 = np.ndarray.tolist(data_phoneme_02)
+
 	Z_phoneme_01 = get_predictions(data_phoneme_01['mu'], data_phoneme_01['s'], data_phoneme_01['p'], gird_val)
+	Z_phoneme_01_sum = np.sum(Z_phoneme_01,axis=1)
 	Z_phoneme_02 = get_predictions(data_phoneme_02['mu'], data_phoneme_02['s'], data_phoneme_02['p'], gird_val)
-	predicted_values = np.ndarray(shape=(len(Z_phoneme_01)))
-	for i in range(len(Z_phoneme_01)):
-		if sum(Z_phoneme_01[i]) > sum(Z_phoneme_02[i]):
-			predicted_values[i] = 0.0
+	Z_phoneme_02_sum = np.sum(Z_phoneme_02,axis=1)
+
+	predClass = []
+	# if sum of probabilities of any model is less than other mark it
+	for z1,z2 in zip(Z_phoneme_01_sum,Z_phoneme_02_sum):
+		if z1 > z2:
+			predClass.append(0.0)
 		else:
-			predicted_values[i] = 1.0
-	return predicted_values
+			predClass.append(1.0)
+
+	y_pred = np.array(predClass)
+	return y_pred
 # Compare these predictions, to classify each point of the grid
 # Store these prediction in a 2D numpy array named "M", of shape N_f2 x N_f1 (the first dimension is f2 so that we keep f2 in the vertical axis of the plot)
+
+
 M = np.ndarray(shape=(N_f2, N_f1))
 for i in range(0,N_f2):
 	M[i,:] = get_predicted_value(3, custom_grid[:,i])
