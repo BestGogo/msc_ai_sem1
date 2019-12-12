@@ -1,6 +1,6 @@
 import numpy as np
 
-MAX_LENGTH = 7
+MAX_LENGTH = 6
 
 class MinePOSPats(object):
     CountDict = {}

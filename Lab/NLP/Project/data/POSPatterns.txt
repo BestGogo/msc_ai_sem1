@@ -1,222 +1,89 @@
 N
-O
-U
  
 V
-E
-R
 B
-P
-C
-T
 D
-A
-J
+.
+P
+R
+T
+,
 I
-N O
+J
+N N
 N  
-N C
-O N
-O U
-U N
   N
   V
-  P
   D
-  A
-V  
-V E
-E R
-E T
-R O
-R B
+  .
+  P
+  R
+  ,
+  I
+  J
+V B
 B  
-P U
+B P
+D  
+D T
+.  
 P  
 P R
-C T
+R B
+R P
 T  
-D V
-D E
-D P
-D J
-A D
-J  
+,  
 I N
-N O U
-N   V
-N   P
-N   A
-N C T
-N T J
-O N  
-O U N
-U N  
-U N C
-  N O
-  V E
-  P U
+J  
+J J
+N N  
+N N P
+N   .
+N P  
+  N N
+  V B
+  D T
+  .  
   P R
-  D E
-  A D
-V E R
-E R B
-E T  
-R O N
+  R B
+  ,  
+  I N
+  J J
+V B  
+V B P
+B P  
+D T  
+P   V
+P   .
+P R P
 R B  
-B   P
-B   A
-P U N
-P R O
-C T  
-T   P
-T J  
-D V  
-D E T
-D P  
-D J  
-A D V
-A D P
-A D J
-J   P
-I N T
-N O U N
-N   V E
-N   P U
-N   A D
-N C T  
-N T J  
-O N   V
-O U N  
-U N   P
-U N C T
-  N O U
-  V E R
-  P U N
-  P R O
-  D E T
-  A D V
-  A D P
-  A D J
-V E R B
-E R B  
-R O N  
-R B   P
-R B   A
-B   P R
-B   A D
-P U N C
-P R O N
-C T   P
-T   N O
-T   P R
-D V   V
-D V   P
-D E T  
-D P   P
-A D V  
-A D P  
-A D J  
-J   P U
-I N T J
-N O U N  
-N   V E R
-N   P U N
-N C T   P
-O N   V E
-O U N   P
-U N   P U
-U N C T  
-  N O U N
-  V E R B
-  P U N C
-  P R O N
-  D E T  
-  A D V  
-  A D P  
-  A D J  
-V   V E R
-V E R B  
-E R B   P
-E R B   A
-R O N   V
-R O N   A
-R B   P R
-R B   A D
-B   P R O
-B   A D V
-P U N C T
-P R O N  
-C T   P R
-T   N O U
-T   P R O
-D V   V E
-A D V   V
-A D V   P
-A D P   P
-J   P U N
-I N T J  
-N O U N   P
-N   V E R B
-N   P U N C
-N C T   P R
-O N   V E R
-O U N   P U
-U N   P U N
-U N C T   P
-  N O U N  
-  V E R B  
-  P U N C T
-  P R O N  
-  A D P   P
-V   V E R B
-V E R B   P
-V E R B   A
-E R B   P R
-E R B   A D
-R O N   V E
-R B   P R O
-R B   A D V
-B   P R O N
-B   A D V  
-P U N C T  
-P R O N   V
-P R O N   A
-C T   P R O
-T   N O U N
-T   V E R B
-T   P R O N
-D V   V E R
-A D V   V E
-J   P U N C
-N O U N   P U
-N   V E R B  
-N   P U N C T
-N C T   P R O
-O N   V E R B
-O U N   P U N
-U N   P U N C
-U N C T   P R
-  N O U N   P
-  V E R B   P
-  V E R B   A
-  P U N C T  
-  P R O N   V
-V   V E R B  
-V E R B   P R
-V E R B   A D
-E R B   P R O
-E R B   A D V
-R O N   V E R
-R B   P R O N
-R B   A D V  
-B   P R O N  
-P U N C T   P
-P R O N   V E
-C T   P R O N
-T   N O U N  
-T   V E R B  
-T   P R O N  
-D V   V E R B
-A D V   V E R
-J   P U N C T
+R P  
+I N  
+J J  
+N N   .
+N N P  
+  N N  
+  V B  
+  V B P
+  D T  
+  P R P
+  R B  
+  I N  
+  J J  
+V B P  
+P   V B
+P R P  
+R P   V
+  N N   .
+  V B P  
+  P R P  
+P   V B P
+P R P   V
+R P   V B
+  P R P   V
+P   V B P  
+P R P   V B
+R P   V B P
+  P R P   V B
+P R P   V B P
+R P   V B P  

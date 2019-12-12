@@ -765,7 +765,7 @@ class Classifier(object):
             ])
 
         text_clf.fit(training_data_dict, training_data_classification)
-        print(final_classifier.best_params_)
+        # print(final_classifier.best_params_)
         ###############################################
 
         return text_clf
