@@ -84,6 +84,3 @@ R P   V B
 P   V B P  
 P R P   V B
 R P   V B P
-  P R P   V B
-P R P   V B P
-R P   V B P  

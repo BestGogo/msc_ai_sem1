@@ -1,583 +1,430 @@
-import sys
-import argparse
+import time
 import pandas as pd
 import numpy as np
 import statistics
 import time
-import multiprocessing as mp
+
 
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score, precision_recall_fscore_support
+from sklearn.metrics import roc_curve
+from sklearn.metrics import roc_auc_score
 
-from sklearn import model_selection
-from scipy.sparse import coo_matrix
+from classifier import *
 
-from fullClassifier import Classifier
-from Helper.DebugPrint import DebugPrint
 
-import matplotlib.pyplot as plt
-plt.style.use('ggplot')
+seed = 1
 
-clf = Classifier()
-
-RANDOMIZER_SEED = 1
-
-def main():
+def genderClassification():
     start = time.time()
+    target_name = ['Female','Male']
+    ## Load the Training Set and Testing Set from numpy dict #####
+    train_data_dict = LoadDataSet('data/train_dict.npy')
+    test_data_dict = LoadDataSet('data/test_dict.npy')
 
-    ## Get Command-line Arguments #################
-    parser = argparse.ArgumentParser()
-    opts = parser.parse_args()
-    ###############################################
-
-    ## Build the Training Set and Testing Set #####
-    training_data_dict = LoadDataSet('data/training_data.xlsx')
-    testing_data_dict = LoadDataSet('data/testing_data.xlsx')
-    ###############################################
 
     ## Load POS Patterns ##########################
-    pos_pattern_vocab = []
+    pos_vocab = []
     with open('data/POSPatterns.txt') as file:
         for line in file:
-            pos_pattern_vocab.append(line.strip('\n'))
-    word_pattern_vocab = []
-    #with open('data/WordPatterns.txt', encoding="utf8") as file:
-    #    for line in file:
-    #        if line.strip('\n') != '':
-    #            word_pattern_vocab.append(line.strip('\n'))
-    ###############################################
- 
-    predictors = {}
-
-#     print('## Initial test set accuracy...')
-#     svm_clf = clf.BuildClassifierSVM(training_data_dict, training_data_dict['classification'], pos_pattern_vocab, word_pattern_vocab, 'usl')
-#     svm_predictions = svm_clf.predict(testing_data_dict)
-#     print("SVM USL Accuracy: %0.3f" % (accuracy_score(testing_data_dict['classification'], svm_predictions)))
-
-#     print('## Adding test set back into training set...')
-#     # Add Testing Data Back to Training Data
-#     for i in range(len(testing_data_dict['index'])):
-#         for key in training_data_dict:
-#             training_data_dict[key].append(testing_data_dict[key][i])
-#     testing_data_dict = {}
-#     CrossValidationTest(training_data_dict, None, pos_pattern_vocab)
-#     print('## Adding some more labled data into training set...')
-#     # Add Unlabled Data
-# #     for i in range(3000):
-# #         for key in training_data_dict:
-# #             training_data_dict[key].append(unlabeled_data_dict[key][0])
-# #             del unlabeled_data_dict[key][0]
+            pos_vocab.append(line.strip('\n'))
+    word_vocab = []
 
 
-#     ## Neural Networks and SSS Learning ###########
-
-#     #svm_clf = clf.BuildClassifierSGD(training_data_dict, pos_pattern_vocab, 'sgd')
-#     #svm_predictions = svm_clf.predict(testing_data_dict)
-#     #print("SGD Accuracy: %0.3f" % (accuracy_score(testing_data_dict['classification'], svm_predictions)))
-#     #predictors['SGD'] = svm_predictions
-
-#     print('## Extracting new test set from training set...')
-#     # Extract Testing Data
-#     X_train = {}
-#     Y_test = {}
-#     kf = model_selection.KFold(n_splits=10, shuffle=True, random_state=RANDOMIZER_SEED)
-#     for train_index, test_index in kf.split(training_data_dict['index']):
-#         for key in training_data_dict:
-#             X_train[key] = [training_data_dict[key][i] for i in train_index]
-#         for key in training_data_dict:
-#             Y_test[key] = [training_data_dict[key][i] for i in test_index]
-#         break
-
-#     training_data_dict = X_train
-#     testing_data_dict = Y_test
-
-#     X_train = {}
-#     Y_test = {}
-
-#     print('## CV Accuracy on new training/test set...')
-#     CrossValidationTest(training_data_dict, None, pos_pattern_vocab)
-
-#     print('## MLP Accuracy on new training/test set...')
-#     nb_clf = clf.BuildClassifierMLP(training_data_dict, pos_pattern_vocab, 'tf')
-#     nb_predictions = nb_clf.predict(testing_data_dict)
-#     print("MLP Accuracy: %0.3f" % (accuracy_score(testing_data_dict['classification'], nb_predictions)))
-
-#     print('## Keras Accuracy on new training/test set...')
-#     history, predictions = clf.BuildClassifierKeras(training_data_dict, testing_data_dict, pos_pattern_vocab, 'tf')
-
-#     print('## Supervised Semi-Supervised Learning...')
-#     print('No unlabeled data')
-# #     training_data_dict = clf.SemiSupervisedLearning(training_data_dict, testing_data_dict, unlabeled_data_dict, pos_pattern_vocab)
-
-#     svm_clf = clf.BuildClassifierSVM(training_data_dict, training_data_dict['classification'], pos_pattern_vocab, word_pattern_vocab, 'usl')
-#     svm_predictions = svm_clf.predict(testing_data_dict)
-#     print("SVM USL Accuracy: %0.3f" % (accuracy_score(testing_data_dict['classification'], svm_predictions)))
-#     predictors['SVM USL'] = svm_predictions
-
-#     print('## MLP Accuracy on SSS dataset')
-#     nb_clf = clf.BuildClassifierMLP(training_data_dict, pos_pattern_vocab, 'tf')
-#     nb_predictions = nb_clf.predict(testing_data_dict)
-#     print("MLP Accuracy: %0.3f" % (accuracy_score(testing_data_dict['classification'], nb_predictions)))
-#     predictors['MLP'] = nb_predictions
-
-#     print('## Keras Accuracy on SSS dataset')
-#     history, predictions = clf.BuildClassifierKeras(training_data_dict, testing_data_dict, pos_pattern_vocab, 'tf')
-#     predictors['KERAS'] = nb_predictions
-
-#     print('## CV Accuracy on SSS dataset')
-#     CrossValidationTest(training_data_dict, None, pos_pattern_vocab)
-
-    #######################
-
-    ##svm_clf = clf.BuildClassifierSVM(training_data_dict, training_data_dict['classification'], pos_pattern_vocab, word_pattern_vocab, 'usl')
-    ##svm_predictions = svm_clf.predict(testing_data_dict)
-    ##print("SVM USL Accuracy: %0.3f" % (accuracy_score(testing_data_dict['classification'], svm_predictions)))
-    ##predictors['USL'] = svm_predictions
-
-    #CrossValidationTest(training_data_dict, None, pos_pattern_vocab)
-
-    #training = clf.SemiSupervisedLearning(training_data_dict, testing_data_dict, unlabeled_data_dict, pos_pattern_vocab)
-
-    #svm_clf = clf.BuildClassifierSVM(training, training['classification'], pos_pattern_vocab, word_pattern_vocab, 'usl')
-    #svm_predictions = svm_clf.predict(testing_data_dict)
-    #print("SVM USL Accuracy: %0.3f" % (accuracy_score(testing_data_dict['classification'], svm_predictions)))
-    #predictors['USL'] = svm_predictions
-
-    #CrossValidationTest(training, None, pos_pattern_vocab)
-
-
-
-    #added_blog = clf.SemiSupervisedLearning2(training_data_dict, testing_data_dict, unlabeled_data_dict, pos_pattern_vocab)
-
-    #new_training_set = dict(added_blog)
-    #for i in range(len(training_data_dict['index'])):
-    #    for key in training_data_dict:
-    #        new_training_set[key].append(training_data_dict[key][i])
-
-    #CrossValidationTest(training_data_dict, added_blog, pos_pattern_vocab)
-
-    ##svm_clf = clf.BuildClassifierSVM(training_data_dict, training_data_dict['classification'], pos_pattern_vocab, word_pattern_vocab, 'tf')
-    ##svm_predictions = svm_clf.predict(testing_data_dict)
-    ##print("SVM TF Accuracy: %0.3f" % (accuracy_score(testing_data_dict['classification'], svm_predictions)))
-    ##predictors['SVM TF'] = svm_predictions
-
-    #svm_clf = clf.BuildClassifierSVM(new_training_set, new_training_set['classification'], pos_pattern_vocab, word_pattern_vocab, 'usl')
-    #svm_predictions = svm_clf.predict(testing_data_dict)
-    #print("SVM USL Accuracy: %0.3f" % (accuracy_score(testing_data_dict['classification'], svm_predictions)))
-    #predictors['USL'] = svm_predictions
-
-    #history = clf.BuildClassifierKeras(training_data_dict, testing_data_dict, pos_pattern_vocab, 'tf')
-
-    #nb_clf = clf.BuildClassifierMLP(training_data_dict, pos_pattern_vocab, 'tf')
-    #nb_predictions = nb_clf.predict(testing_data_dict)
-    #print("MLP Accuracy: %0.3f" % (accuracy_score(testing_data_dict['classification'], nb_predictions)))
-    #predictors['MLP'] = nb_predictions
-
-    #svm_clf = clf.BuildClassifierSVM(training_data_dict, training_data_dict['classification'], pos_pattern_vocab, word_pattern_vocab, 'tf')
-    #svm_predictions = svm_clf.predict(testing_data_dict)
-    #print("SVM TF Accuracy: %0.3f" % (accuracy_score(testing_data_dict['classification'], svm_predictions)))
-    #predictors['SVM TF'] = svm_predictions
-
-    #history = clf.BuildClassifierKeras(training_data_dict, testing_data_dict, pos_pattern_vocab, 'tf')
-
-    #training = clf.SemiSupervisedLearning(training_data_dict, testing_data_dict, unlabeled_data_dict, pos_pattern_vocab)
-
-    #CrossValidationTest(training, pos_pattern_vocab)
-
-    #training_data_dict = training
-    #history = clf.BuildClassifierKeras(training, testing_data_dict, pos_pattern_vocab, 'tf')
-
-    #plot_history(history)
-
-    ##svm_clf = clf.BuildClassifierSVM(training, training['classification'], pos_pattern_vocab, word_pattern_vocab, 'tf')
-    ##svm_predictions = svm_clf.predict(testing_data_dict)
-    ##print("SVM TF Accuracy: %0.3f" % (accuracy_score(testing_data_dict['classification'], svm_predictions)))
-    ##predictors['SVM TF'] = svm_predictions
-
-
-    #svm_clf = clf.BuildClassifierSVM(training, training['classification'], pos_pattern_vocab, word_pattern_vocab, 'usl')
-    #svm_predictions = svm_clf.predict(testing_data_dict)
-    #print("SVM USL Accuracy: %0.3f" % (accuracy_score(testing_data_dict['classification'], svm_predictions)))
-    #predictors['USL'] = svm_predictions
-
-    #nb_clf = clf.BuildClassifierMLP(training, pos_pattern_vocab, 'tf')
-    #nb_predictions = nb_clf.predict(testing_data_dict)
-    #print("MLP Accuracy: %0.3f" % (accuracy_score(testing_data_dict['classification'], nb_predictions)))
-    #predictors['MLP'] = nb_predictions
-
-    ##############################################
-
-    ## Ensemble ##################################
-
-    # ensemble_clf = clf.BuildClassifierEnsemble(training_data_dict, training_data_dict['classification'], pos_pattern_vocab, word_pattern_vocab, 'bool-bagging')
-    # ensemble_predictions = ensemble_clf.predict(testing_data_dict)
-    # print("ENSEMBLE BAGGING Accuracy: %0.2f" % (accuracy_score(testing_data_dict['classification'], ensemble_predictions)))
-    # predictors['ENSEMBLE BAGGING'] = ensemble_predictions
-
-    #ensemble_clf = clf.BuildClassifierEnsemble(training_data_dict, training_data_dict['classification'], pos_pattern_vocab, word_pattern_vocab, 'discrete-bagging-r')
-    #ensemble_predictions = ensemble_clf.predict(testing_data_dict)
-    #predictions = []
-    #for prediction in ensemble_predictions:
-    #    if prediction >= 0:
-    #        predictions.append(1)
-    #    else:
-    #        predictions.append(-1)
-    #print("ENSEMBLE-R Accuracy: %0.2f" % (accuracy_score(testing_data_dict['classification'], predictions)))
-    #predictors['ENSEMBLE BAGGING'] = ensemble_predictions
-    ##############################################
-
-    ## Naive Bayes ################################
+    ## Naive Bayes 
     print("### Naive Bayes ###")
-    nb_clf = clf.BuildClassifierNB(training_data_dict, training_data_dict['classification'], pos_pattern_vocab, word_pattern_vocab, 'tf')
-    nb_predictions = nb_clf.predict(testing_data_dict)
-    print("NB TF Accuracy: %0.3f" % (accuracy_score(testing_data_dict['classification'], nb_predictions)))
-    predictors['NB TF'] = nb_predictions
-
-    # nb_clf = clf.BuildClassifierNB(training_data_dict, training_data_dict['classification'], pos_pattern_vocab, word_pattern_vocab, 'discrete')
-    # nb_predictions = nb_clf.predict(testing_data_dict)
-    # print("NB DISCRETE Accuracy: %0.3f" % (accuracy_score(testing_data_dict['classification'], nb_predictions)))
-    # predictors['NB DISCRETE'] = nb_predictions
-
-    # nb_clf = clf.BuildClassifierNB(training_data_dict, training_data_dict['classification'], pos_pattern_vocab, word_pattern_vocab, 'bool')
-    # nb_predictions = nb_clf.predict(testing_data_dict)
-    # print("NB BOOL Accuracy: %0.3f" % (accuracy_score(testing_data_dict['classification'], nb_predictions)))
-    # predictors['NB BOOL'] = nb_predictions
-    ##############################################
-
-    ## SVM ########################################
+    nb_clf = naiveBayesClassifier(train_data_dict, train_data_dict['gender'], pos_vocab, word_vocab, 'tf')
+    nb_predictions = nb_clf.predict(test_data_dict)
+    get_results("Naive Bayes", test_data_dict['gender'], nb_predictions, target_name)
+    
+    ## SVM 
     print("### SVM ###")
-    svm_clf = clf.BuildClassifierSVM(training_data_dict, training_data_dict['classification'], pos_pattern_vocab, word_pattern_vocab, 'bool')
-    svm_predictions = svm_clf.predict(testing_data_dict)
-    print("SVM BOOL Accuracy: %0.3f" % (accuracy_score(testing_data_dict['classification'], svm_predictions)))
-    predictors['SVM BOOL'] = svm_predictions
+    svm_clf = SVMClassifier(train_data_dict, train_data_dict['gender'], pos_vocab, word_vocab, 'bool')
+    svm_predictions = svm_clf.predict(test_data_dict)
+    get_results("SVM", test_data_dict['gender'], svm_predictions, target_name)
 
-    # svm_clf = clf.BuildClassifierSVM(training_data_dict, training_data_dict['classification'], pos_pattern_vocab, word_pattern_vocab, 'tf')
-    # svm_predictions = svm_clf.predict(testing_data_dict)
-    # print("SVM TF Accuracy: %0.3f" % (accuracy_score(testing_data_dict['classification'], svm_predictions)))
-    # predictors['SVM TF'] = svm_predictions
+    svm_clf = SVMClassifier(train_data_dict, train_data_dict['gender'], pos_vocab, word_vocab, 'discrete')
+    svm_predictions = svm_clf.predict(test_data_dict)
+    get_results("SVM DISCRETE", test_data_dict['gender'], svm_predictions, target_name)
 
-    #svm_clf = clf.BuildClassifierSVM(training_data_dict, training_data_dict['classification'], pos_pattern_vocab, word_pattern_vocab, 'svmlight-tf')
-    #feats = svm_clf.named_steps['features']
-    #X = feats.transform(training_data_dict)
-    #ConvertToSVMLight(X, training_data_dict['classification'], 'data/TrainSVMLight.txt')
-    #X = feats.transform(testing_data_dict)
-    #ConvertToSVMLight(X, testing_data_dict['classification'], 'data/TestSVMLight.txt')
-    #svm_predictions = svm_clf.predict(testing_data_dict)
-    #print("SVM LIGHT Accuracy: %0.3f" % (accuracy_score(testing_data_dict['classification'], svm_predictions)))
-    #predictors['SVM LIGHT'] = svm_predictions
+    svm_clf = SVMClassifier(train_data_dict, train_data_dict['gender'], pos_vocab, word_vocab, 'svc')
+    svm_predictions = svm_clf.predict(test_data_dict)
+    get_results("SVM SVC", test_data_dict['gender'], svm_predictions, target_name)
 
-    svm_clf = clf.BuildClassifierSVM(training_data_dict, training_data_dict['classification'], pos_pattern_vocab, word_pattern_vocab, 'discrete')
-    svm_predictions = svm_clf.predict(testing_data_dict)
-    print("SVM DISCRETE Accuracy: %0.3f" % (accuracy_score(testing_data_dict['classification'], svm_predictions)))
-    predictors['SVM DISCRETE'] = svm_predictions
-
-    svm_clf = clf.BuildClassifierSVM(training_data_dict, training_data_dict['classification'], pos_pattern_vocab, word_pattern_vocab, 'svc')
-    svm_predictions = svm_clf.predict(testing_data_dict)
-    print("SVM SVC Accuracy: %0.3f" % (accuracy_score(testing_data_dict['classification'], svm_predictions)))
-    predictors['SVM SVC'] = svm_predictions
-    ###############################################
-
-    ## SVM - Regression ##########################
+    ## SVM - Regression
     print("### SVM - Regression ###")
-    svmr_clf = clf.BuildClassifierSVMR(training_data_dict, training_data_dict['classification'], pos_pattern_vocab, word_pattern_vocab, 'linearsvr')
-    svmr_predictions = svmr_clf.predict(testing_data_dict)
+    svmr_clf = SVMRClassifier(train_data_dict, train_data_dict['gender'], pos_vocab, word_vocab, 'linearsvr')
+    svmr_predictions = svmr_clf.predict(test_data_dict)
     predictions = []
     for prediction in svmr_predictions:
         if prediction >= 0:
             predictions.append(1)
         else:
             predictions.append(-1)
-    print("SVM-R LINEAR DEFAULT Accuracy: %0.3f" % (accuracy_score(testing_data_dict['classification'], predictions)))
-    predictors['SVM-R LINEAR'] = svmr_predictions
+    get_results("SVM-R LINEAR DEFAULT", test_data_dict['gender'], predictions, target_name)
 
-    # svmr_clf = clf.BuildClassifierSVMR(training_data_dict, training_data_dict['classification'], pos_pattern_vocab, word_pattern_vocab, 'bool')
-    # svmr_predictions = svmr_clf.predict(testing_data_dict)
-    # predictions = []
-    # for prediction in svmr_predictions:
-    #     if prediction >= 0:
-    #         predictions.append(1)
-    #     else:
-    #         predictions.append(-1)
-    # print("SVM-R BOOL Accuracy: %0.3f" % (accuracy_score(testing_data_dict['classification'], predictions)))
-    # predictors['SVM-R BOOL'] = svmr_predictions
-
-    # svmr_clf = clf.BuildClassifierSVMR(training_data_dict, training_data_dict['classification'], pos_pattern_vocab, word_pattern_vocab, 'tf')
-    # svmr_predictions = svmr_clf.predict(testing_data_dict)
-    # predictions = []
-    # for prediction in svmr_predictions:
-    #     if prediction >= 0:
-    #         predictions.append(1)
-    #     else:
-    #         predictions.append(-1)
-    # print("SVM-R TF Accuracy: %0.3f" % (accuracy_score(testing_data_dict['classification'], predictions)))
-    # predictors['SVM-R TF'] = svmr_predictions
-    ##############################################
-
-    ## Test Model #################################
-    correct_classifications, predictor_score = GetFinalPrediction(testing_data_dict['classification'], predictors)
-    print("FINAL Accuracy: %0.3f" % (correct_classifications / len(testing_data_dict['classification'])))
-
-    print(predictor_score)
-    print("\n Removing worst predictor: " + predictor_score[0][0])
-    del predictors[predictor_score[0][0]]
-
-    correct_classifications, predictor_score = GetFinalPrediction(testing_data_dict['classification'], predictors)
-    print("FINAL Accuracy: %0.3f" % (correct_classifications / len(testing_data_dict['classification'])))
-    
-    print(predictor_score)
-    print("\n Removing worst predictor: " + predictor_score[0][0])
-    del predictors[predictor_score[0][0]]
-
-    correct_classifications, predictor_score = GetFinalPrediction(testing_data_dict['classification'], predictors)
-    print("FINAL Accuracy: %0.3f" % (correct_classifications / len(testing_data_dict['classification'])))
-    
-    print(predictor_score)
-    print("\n Removing worst predictor: " + predictor_score[0][0])
-    del predictors[predictor_score[0][0]]
-
-    correct_classifications, predictor_score = GetFinalPrediction(testing_data_dict['classification'], predictors)
-    print("FINAL Accuracy: %0.3f" % (correct_classifications / len(testing_data_dict['classification'])))
-    print(predictor_score)
-    print()
+    print("")
 
     end = time.time()
-    print("Time Run = %fs" % (end - start))
+    print("Total Run Time = %fs" % (end - start))
 
-    return
+    return 0
 
-def plot_history(history):
-    acc = history.history['acc']
-    val_acc = history.history['val_acc']
-    loss = history.history['loss']
-    val_loss = history.history['val_loss']
-    x = range(1, len(acc) + 1)
+def characterClassification():
+    start = time.time()
 
-    plt.figure(figsize=(12, 5))
-    plt.subplot(1, 2, 1)
-    plt.plot(x, acc, 'b', label='Training acc')
-    plt.plot(x, val_acc, 'r', label='Validation acc')
-    plt.title('Training and validation accuracy')
-    plt.legend()
-    plt.subplot(1, 2, 2)
-    plt.plot(x, loss, 'b', label='Training loss')
-    plt.plot(x, val_loss, 'r', label='Validation loss')
-    plt.title('Training and validation loss')
-    plt.legend()
+    ## Load the Training Set and Testing Set from numpy dict #####
+    train_data_dict = LoadDataSet('data/train_dict.npy')
+    test_data_dict = LoadDataSet('data/test_dict.npy')
 
-def GetFinalPrediction(real_classification, predictors):
-    predictor_score = {}
-    for predictor_type, predictor in predictors.items():
-        predictor_score[predictor_type] = 0
 
-    correct_classifications_male = 0
-    correct_classifications_female = 0
-    for i in range(len(real_classification)):
-        actual_class = real_classification[i]
-        male_vote = 0
-        female_vote = 0
+    ## Load POS Patterns ##########################
+    pos_vocab = []
+    with open('data/POSPatterns.txt') as file:
+        for line in file:
+            pos_vocab.append(line.strip('\n'))
+    word_vocab = []
 
-        for predictor_type, predictor in predictors.items():
-            if predictor[i] == 1:
-                male_vote += 1
-            else:
-                female_vote += 1
 
-        if male_vote > female_vote and actual_class == 1:
-            correct_classifications_male += 1
-        elif female_vote > male_vote and actual_class == -1:
-            correct_classifications_female += 1
-        else:
-            for predictor_type, predictor in predictors.items():
-                if predictor[i] != actual_class:
-                    predictor_score[predictor_type]+= 1
+    ## Naive Bayes 
+    print("### Naive Bayes ###")
+    nb_clf = naiveBayesClassifier(train_data_dict, train_data_dict['character'], pos_vocab, word_vocab, 'tf')
+    nb_predictions = nb_clf.predict(test_data_dict)
+    get_results("Naive Bayes", test_data_dict['character'], nb_predictions)
 
-        if male_vote == female_vote:
-            #print('Tie Breaker, Guess Male')
-            if actual_class == 1:
-                correct_classifications_male += 1
-                for predictor_type, predictor in predictors.items():
-                    if predictor[i] != actual_class:
-                        predictor_score[predictor_type] += 1
+    ## SVM 
+    print("### SVM ###")
+    svm_clf = SVMClassifier(train_data_dict, train_data_dict['character'], pos_vocab, word_vocab, 'bool')
+    svm_predictions = svm_clf.predict(test_data_dict)
+    get_results("SVM", test_data_dict['character'], svm_predictions)
 
-    print('Correct Male: %d - Correct Female: %d' % (correct_classifications_male, correct_classifications_female))
+    svm_clf = SVMClassifier(train_data_dict, train_data_dict['character'], pos_vocab, word_vocab, 'discrete')
+    svm_predictions = svm_clf.predict(test_data_dict)
+    get_results("SVM DISCRETE", test_data_dict['character'], svm_predictions)
 
-    return correct_classifications_male + correct_classifications_female, [(k, predictor_score[k]) for k in sorted(predictor_score, key=predictor_score.get, reverse=True)]
+    svm_clf = SVMClassifier(train_data_dict, train_data_dict['character'], pos_vocab, word_vocab, 'svc')
+    svm_predictions = svm_clf.predict(test_data_dict)
+    get_results("SVM SVC", test_data_dict['character'], svm_predictions)
 
-def CrossValidationTest(X, X_addon, pos_pattern_vocab):
-    kf = model_selection.KFold(n_splits=10, shuffle=True, random_state=RANDOMIZER_SEED)
+    print("")
 
-    cv_scores = []
-    pool = mp.Pool(5)
-    def CollectResults(result):
-        cv_scores.append(result)
+    end = time.time()
+    print("Total Run Time = %fs" % (end - start))
 
-    for train_index, test_index in kf.split(X['index']):
-        X_train = {}
-        for key in X:
-            X_train[key] = [X[key][i] for i in train_index]
-        Y_test = {}
-        for key in X:
-            Y_test[key] = [X[key][i] for i in test_index]
+    return 0
 
-        if X_addon is not None:
-            for i in range(len(X_addon['index'])):
-                for key in X_train:
-                    X_train[key].append(X_addon[key][i])
 
-        pool.apply_async(DoCVSplitTest, args=(X_train, Y_test, pos_pattern_vocab), callback=CollectResults)
+def get_results(model_name, y_true,y_pred, target_name=None):
+    
+    accuracy = accuracy_score(y_true,y_pred)
+    print(classification_report(y_true, y_pred, target_names = target_name))
 
-    pool.close()
-    pool.join()
+    confusion = confusion_matrix(y_true, y_pred)
 
-    cv_scores = np.array(cv_scores)
-    print("Cross Validation Accuracy: %0.4f (+/- %0.2f)" % (cv_scores[:,0].mean(), cv_scores[:,0].std()))
-    print("Cross Validation Precision: %0.4f (+/- %0.2f)" % (cv_scores[:,1].mean(), cv_scores[:,1].std()))
-    print("Cross Validation Recall: %0.4f (+/- %0.2f)" % (cv_scores[:,2].mean(), cv_scores[:,2].std()))
-    print("Cross Validation F-score: %0.4f (+/- %0.2f)" % (cv_scores[:,3].mean(), cv_scores[:,3].std()))
-    return cv_scores
-
-def DoCVSplitTest(X_train, Y_test, vocab):
-    classifier = clf.BuildClassifierSVM(X_train, X_train['classification'], vocab, None, 'usl')
-    predictions = classifier.predict(Y_test)
-    accuracy = np.array([accuracy_score(Y_test['classification'], predictions)])
-    prfs = np.array(precision_recall_fscore_support(Y_test['classification'], predictions, average='weighted', warn_for=()))
-    result = np.append(accuracy, prfs)
-    return result
+    print("confusion matrix: ")
+    print(confusion)
+    TP = confusion[1, 1]
+    TN = confusion[0, 0]
+    FP = confusion[0, 1]
+    FN = confusion[1, 0]
+    classification_error = (FP + FN) / float(TP + TN + FP + FN)
+    print(' {} Accuracy: {:.2f}%'.format(model_name, accuracy*100))
+    print('Mis-classification error for {} : {:.2f}%'.format(model_name, classification_error*100))
 
 def LoadDataSet(path):
-    data_dict = {}
-    data_dict['index'] = []
-    data_dict['classification'] = []
-    data_dict['tokenized_text'] = []
-    data_dict['tokenized_text_2'] = []
-    data_dict['tagged_text'] = []
-    data_dict['text'] = []
-    data_dict['pos'] = []
-    data_dict['wordcount'] = []
-    data_dict['length'] = []
-    data_dict['fmeasure'] = []
-    data_dict['gpf'] = []
-    data_dict['fa'] = []
-    data_dict['diag_act'] = []
-    
-    data_dict['le_c'] = []
-    data_dict['words_misspelled'] = []
-    data_dict['ts'] = []
-    v = ['text', 'character', 'gender', 'text_norm', 'token_text_norm', 'POS',
-       'POS_tagged', 'f_measure', 'word_count', 'length', 'gf', 'GPF0', 'GPF1',
-       'GPF2', 'GPF3', 'GPF4', 'GPF5', 'GPF6', 'GPF7', 'GPF8', 'GPF9', 'fa',
-       'F0', 'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10',
-       'F11', 'F12', 'F13', 'F14', 'F15', 'F16', 'F17', 'F18', 'F19', 'F20',
-       'F21', 'F22', 'diag_act_+', 'diag_act_^q', 'diag_act_ad',
-       'diag_act_othr', 'diag_act_qw', 'diag_act_qy', 'diag_act_qy^d',
-       'diag_act_sd', 'diag_act_sv', 'LE_C', 'TS', 'mispelled']
-    df = pd.read_excel(path, usecols=range(0, 60))
-    for i in range(len(df['gender'])):
-        gpf = []
-        fa = []
-        diag_act = []
-        for j in range(10):
-            gpf.append(0)
-        for j in range(23):
-            fa.append(0)
-        for j in range(8):
-            diag_act.append(0)
-        #text = str(df['Text'][i])
-        tokenized_text = str(df['text_norm'][i])
-        tokenized_text_2 = str(df['token_text_norm'][i])
-        tagged_text = str(df['POS_tagged'])
-        text = str(df['text'][i])
-        pos = df['POS'][i]
-        classification = df['gender'][i]
-        word_count = df['word_count'][i]
-        text_length = df['length'][i]
-        fmeasure = df['f_measure'][i]
-        gpf[0] = df['GPF0'][i]
-        gpf[1] = df['GPF1'][i]
-        gpf[2] = df['GPF2'][i]
-        gpf[3] = df['GPF3'][i]
-        gpf[4] = df['GPF4'][i]
-        gpf[5] = df['GPF5'][i]
-        gpf[6] = df['GPF6'][i]
-        gpf[7] = df['GPF7'][i]
-        gpf[8] = df['GPF8'][i]
-        gpf[9] = df['GPF9'][i]
-        fa[0] = df['F1'][i]
-        fa[1] = df['F2'][i]
-        fa[2] = df['F3'][i]
-        fa[3] = df['F4'][i]
-        fa[4] = df['F5'][i]
-        fa[5] = df['F6'][i]
-        fa[6] = df['F7'][i]
-        fa[7] = df['F8'][i]
-        fa[8] = df['F9'][i]
-        fa[9] = df['F10'][i]
-        fa[10] = df['F11'][i]
-        fa[11] = df['F12'][i]
-        fa[12] = df['F13'][i]
-        fa[13] = df['F14'][i]
-        fa[14] = df['F15'][i]
-        fa[15] = df['F16'][i]
-        fa[16] = df['F17'][i]
-        fa[17] = df['F18'][i]
-        fa[18] = df['F19'][i]
-        fa[19] = df['F20'][i]
-        fa[20] = df['F21'][i]
-        fa[21] = df['F22'][i]
-        fa[22] = df['F0'][i]
-#         diag_act[0] = df['diag_act_fo_o_fw_"_by_bc'][i]
-        diag_act[0] = df['diag_act_^q'][i]
-        diag_act[1] = df['diag_act_ad'][i]
-        diag_act[2] = df['diag_act_othr'][i]
-        diag_act[3] = df['diag_act_qw'][i]
-        diag_act[4] = df['diag_act_qy'][i]
-        diag_act[5] = df['diag_act_qy^d'][i]
-        diag_act[6] = df['diag_act_sd'][i]
-        diag_act[7] = df['diag_act_sv'][i]
-        
-        le_c = df['LE_C'][i]
-        words_misspelled = df['mispelled'][i] / word_count
-        ts = df['TS'][i]
-
-        data_dict['index'].append(i)
-        data_dict['classification'].append(classification)
-        data_dict['tokenized_text'].append(tokenized_text)
-        data_dict['tokenized_text_2'].append(tokenized_text_2)
-        data_dict['tagged_text'].append(tagged_text)
-        data_dict['text'].append(text)
-        data_dict['pos'].append(pos)
-        data_dict['wordcount'].append(word_count)
-        data_dict['length'].append(text_length)
-        data_dict['fmeasure'].append(fmeasure)
-        data_dict['gpf'].append(gpf)
-        data_dict['fa'].append(fa)
-        data_dict['diag_act'].append(diag_act)
-
-        data_dict['le_c'].append(le_c)
-        data_dict['words_misspelled'].append(words_misspelled)
-        data_dict['ts'].append(ts)
+    data_dict = np.ndarray.tolist(np.load(path, allow_pickle=True))
+    print(data_dict.keys())
     return data_dict
 
-def ConvertToSVMLight(X, Y, path):
-    cx = coo_matrix(X)
-
-    with open(path, 'w') as file:
-        current_i = -1
-        current_line = []
-        for i, j, v in zip(cx.row, cx.col, cx.data):
-            if current_i != i:
-                if current_line:
-                    current_line_2 = sorted(current_line, key=lambda x: int(x.split(':')[0]))
-
-                    if Y[current_i] == 1:
-                        #current_line.append('+1')
-                        file.write('+1 ' + ' '.join(current_line_2) + '\n')
-                    else:
-                        #current_line.append('-1')
-                        file.write('-1 ' + ' '.join(current_line_2) + '\n')
-                current_line = []
-                current_i = i
-            current_line.append('%d:%0.16f' % (j + 1, v))
-    return
-
 if __name__ == '__main__':
-    main()
+    genderClassification()
+    # characterClassification()
+
+
+
+
+
+
+
+"""
+(virt-py3tf) (base) nehas@lucy-MS-7B61:/home/projects/soft-goods/Project$ python GenderClassifier.py
+dict_keys(['text', 'character', 'gender', 'text_norm', 'token_text_norm', 'POS', 'POS_tagged', 'f_measure', 'word_count', 'length', 'gf', 'fa', 'diag_act', 'LE_C', 'TS', 'mispelled', 'index'])
+dict_keys(['text', 'character', 'gender', 'text_norm', 'token_text_norm', 'POS', 'POS_tagged', 'f_measure', 'word_count', 'length', 'gf', 'fa', 'diag_act', 'LE_C', 'TS', 'mispelled', 'index'])
+### Naive Bayes ###
+              precision    recall  f1-score   support
+
+      Female       0.55      0.65      0.60       526
+        Male       0.64      0.54      0.59       598
+
+   micro avg       0.59      0.59      0.59      1124
+   macro avg       0.60      0.59      0.59      1124
+weighted avg       0.60      0.59      0.59      1124
+
+confusion matrix:
+[[340 186]
+ [273 325]]
+ Naive Bayes Accuracy: 59.16%
+Mis-classification error for Naive Bayes : 40.84%
+### SVM ###
+              precision    recall  f1-score   support
+
+      Female       0.57      0.61      0.59       526
+        Male       0.63      0.59      0.61       598
+
+   micro avg       0.60      0.60      0.60      1124
+   macro avg       0.60      0.60      0.60      1124
+weighted avg       0.60      0.60      0.60      1124
+
+confusion matrix:
+[[323 203]
+ [247 351]]
+ SVM Accuracy: 59.96%
+Mis-classification error for SVM : 40.04%
+              precision    recall  f1-score   support
+
+      Female       0.56      0.62      0.59       526
+        Male       0.63      0.58      0.60       598
+
+   micro avg       0.60      0.60      0.60      1124
+   macro avg       0.60      0.60      0.60      1124
+weighted avg       0.60      0.60      0.60      1124
+
+confusion matrix:
+[[325 201]
+ [252 346]]
+ SVM DISCRETE Accuracy: 59.70%
+Mis-classification error for SVM DISCRETE : 40.30%
+/home/projects/virt-py3tf/lib/python3.7/site-packages/sklearn/externals/joblib/externals/loky/process_executor.py:706: UserWarning: A worker stopped while some jobs were given to the executor. This can be caused by a too short worker timeout or by a memory leak.
+  "timeout or by a memory leak.", UserWarning
+              precision    recall  f1-score   support
+
+      Female       0.55      0.59      0.57       526
+        Male       0.61      0.58      0.60       598
+
+   micro avg       0.58      0.58      0.58      1124
+   macro avg       0.58      0.58      0.58      1124
+weighted avg       0.58      0.58      0.58      1124
+
+confusion matrix:
+[[308 218]
+ [252 346]]
+ SVM SVC Accuracy: 58.19%
+Mis-classification error for SVM SVC : 41.81%
+### SVM - Regression ###
+              precision    recall  f1-score   support
+
+      Female       0.56      0.60      0.58       526
+        Male       0.62      0.58      0.60       598
+
+   micro avg       0.59      0.59      0.59      1124
+   macro avg       0.59      0.59      0.59      1124
+weighted avg       0.59      0.59      0.59      1124
+
+confusion matrix:
+[[318 208]
+ [254 344]]
+ SVM-R LINEAR DEFAULT Accuracy: 58.90%
+Mis-classification error for SVM-R LINEAR DEFAULT : 41.10%
+
+Total Run Time = 450.020319s
+"""
+
+
+
+
+"""
+(virt-py3tf) (base) nehas@lucy-MS-7B61:/home/projects/soft-goods/Project$ python GenderClassifier.py
+dict_keys(['text', 'character', 'gender', 'text_norm', 'token_text_norm', 'POS', 'POS_tagged', 'f_measure', 'word_count', 'length', 'gf', 'fa', 'diag_act', 'LE_C', 'TS', 'mispelled', 'index'])
+dict_keys(['text', 'character', 'gender', 'text_norm', 'token_text_norm', 'POS', 'POS_tagged', 'f_measure', 'word_count', 'length', 'gf', 'fa', 'diag_act', 'LE_C', 'TS', 'mispelled', 'index'])
+### Naive Bayes ###
+/home/projects/virt-py3tf/lib/python3.7/site-packages/sklearn/metrics/classification.py:1143: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples.
+  'precision', 'predicted', average, warn_for)
+              precision    recall  f1-score   support
+
+     BRADLEY       1.00      0.05      0.09        41
+   CHRISTIAN       0.00      0.00      0.00        46
+       CLARE       0.00      0.00      0.00        31
+       GARRY       0.00      0.00      0.00        48
+     HEATHER       0.25      0.02      0.04        42
+         IAN       0.16      0.17      0.16       101
+        JACK       0.00      0.00      0.00        85
+        JANE       0.50      0.11      0.17        76
+         MAX       0.47      0.11      0.18        73
+       MINTY       1.00      0.02      0.04        51
+        PHIL       0.33      0.02      0.04        53
+      RONNIE       0.20      0.02      0.04        52
+        ROXY       0.00      0.00      0.00        56
+        SEAN       0.00      0.00      0.00        63
+     SHIRLEY       1.00      0.07      0.13        73
+      STACEY       0.75      0.04      0.08        72
+      STEVEN       0.00      0.00      0.00        37
+       TANYA       0.12      0.96      0.22       124
+
+   micro avg       0.15      0.15      0.15      1124
+   macro avg       0.32      0.09      0.07      1124
+weighted avg       0.32      0.15      0.09      1124
+
+confusion matrix:
+[[  2   0   0   0   0   4   0   0   0   0   0   0   0   0   0   0   0  35]
+ [  0   0   0   0   0   9   0   1   2   0   0   0   0   0   0   0   0  34]
+ [  0   0   0   0   0   5   0   0   0   0   0   0   0   0   0   0   0  26]
+ [  0   0   0   0   0   3   0   0   0   0   0   0   0   0   0   0   0  45]
+ [  0   0   0   0   1   2   0   0   1   0   0   0   0   0   0   0   0  38]
+ [  0   1   0   0   0  17   0   3   0   0   0   0   0   0   0   0   0  80]
+ [  0   0   0   0   1   4   0   0   1   0   0   1   0   0   0   0   0  78]
+ [  0   0   0   0   0  10   0   8   0   0   0   0   0   0   0   0   0  58]
+ [  0   0   0   0   0   5   0   0   8   0   0   0   0   0   0   0   0  60]
+ [  0   0   0   0   1   6   0   1   2   1   0   0   0   0   0   0   0  40]
+ [  0   0   0   0   0   8   0   1   0   0   1   0   0   0   0   1   0  42]
+ [  0   0   0   0   0   5   0   0   1   0   0   1   0   0   0   0   0  45]
+ [  0   0   0   0   0   5   0   1   0   0   0   1   0   0   0   0   0  49]
+ [  0   0   0   0   1   4   1   0   1   0   1   0   0   0   0   0   0  55]
+ [  0   0   0   0   0   4   0   1   0   0   0   0   0   0   5   0   0  63]
+ [  0   0   0   0   0   8   0   0   0   0   1   1   0   0   0   3   0  59]
+ [  0   0   0   0   0   7   0   0   0   0   0   0   0   0   0   0   0  30]
+ [  0   0   0   0   0   3   0   0   1   0   0   1   0   0   0   0   0 119]]
+ Naive Bayes Accuracy: 14.77%
+Mis-classification error for Naive Bayes : 0.00%
+### SVM ###
+/home/projects/virt-py3tf/lib/python3.7/site-packages/sklearn/svm/base.py:931: ConvergenceWarning: Liblinear failed to converge, increase the number of iterations.
+  "the number of iterations.", ConvergenceWarning)
+/home/projects/virt-py3tf/lib/python3.7/site-packages/sklearn/svm/base.py:931: ConvergenceWarning: Liblinear failed to converge, increase the number of iterations.
+  "the number of iterations.", ConvergenceWarning)
+              precision    recall  f1-score   support
+
+     BRADLEY       1.00      0.02      0.05        41
+   CHRISTIAN       0.44      0.09      0.15        46
+       CLARE       0.24      0.16      0.19        31
+       GARRY       0.43      0.06      0.11        48
+     HEATHER       0.36      0.33      0.35        42
+         IAN       0.14      0.29      0.19       101
+        JACK       0.23      0.09      0.13        85
+        JANE       0.45      0.26      0.33        76
+         MAX       0.27      0.25      0.26        73
+       MINTY       0.50      0.14      0.22        51
+        PHIL       0.26      0.09      0.14        53
+      RONNIE       0.39      0.17      0.24        52
+        ROXY       0.50      0.07      0.12        56
+        SEAN       0.21      0.05      0.08        63
+     SHIRLEY       0.34      0.15      0.21        73
+      STACEY       0.28      0.15      0.20        72
+      STEVEN       0.25      0.03      0.05        37
+       TANYA       0.16      0.73      0.27       124
+
+   micro avg       0.22      0.22      0.22      1124
+   macro avg       0.36      0.17      0.18      1124
+weighted avg       0.33      0.22      0.19      1124
+
+confusion matrix:
+[[ 1  1  1  0  0  7  0  1  1  0  1  1  0  1  2  2  2 20]
+ [ 0  4  0  0  0 17  2  1  2  0  0  0  0  1  4  0  0 15]
+ [ 0  0  5  0  0  6  1  0  2  0  0  0  0  1  1  1  0 14]
+ [ 0  0  0  3  4  9  1  1  3  1  1  1  0  1  1  4  0 18]
+ [ 0  0  0  0 14  5  1  0  2  1  1  0  0  1  1  1  0 15]
+ [ 0  2  2  0  1 29  4  3  3  0  0  0  0  0  4  1  0 52]
+ [ 0  0  1  1  1 14  8  2  5  0  0  4  1  1  0  5  0 42]
+ [ 0  0  0  0  2 19  1 20  4  0  0  0  0  0  0  0  0 30]
+ [ 0  1  3  1  0  9  2  1 18  1  1  1  0  1  1  4  0 29]
+ [ 0  0  0  1  7  8  0  2  3  7  0  0  0  1  1  1  0 20]
+ [ 0  0  0  0  3  9  4  1  3  2  5  1  0  0  3  1  0 21]
+ [ 0  0  0  0  1  8  1  1  4  1  2  9  2  0  1  1  0 21]
+ [ 0  0  0  0  1  9  3  3  2  0  1  2  4  0  1  0  0 30]
+ [ 0  0  0  0  1  7  2  0  4  0  2  2  0  3  1  3  1 37]
+ [ 0  0  2  0  3  9  3  3  1  1  3  0  0  1 11  4  0 32]
+ [ 0  0  3  0  0  7  0  2  2  0  0  1  1  1  0 11  0 44]
+ [ 0  1  0  1  1  8  2  1  4  0  0  0  0  0  0  0  1 18]
+ [ 0  0  4  0  0 21  0  2  3  0  2  1  0  1  0  0  0 90]]
+ SVM Accuracy: 21.62%
+Mis-classification error for SVM : 16.67%
+              precision    recall  f1-score   support
+
+     BRADLEY       0.33      0.07      0.12        41
+   CHRISTIAN       0.18      0.13      0.15        46
+       CLARE       0.12      0.16      0.14        31
+       GARRY       0.19      0.08      0.12        48
+     HEATHER       0.26      0.33      0.29        42
+         IAN       0.18      0.23      0.20       101
+        JACK       0.20      0.12      0.15        85
+        JANE       0.38      0.29      0.33        76
+         MAX       0.30      0.34      0.32        73
+       MINTY       0.33      0.22      0.26        51
+        PHIL       0.23      0.21      0.22        53
+      RONNIE       0.26      0.25      0.25        52
+        ROXY       0.22      0.11      0.14        56
+        SEAN       0.09      0.05      0.06        63
+     SHIRLEY       0.23      0.18      0.20        73
+      STACEY       0.17      0.18      0.17        72
+      STEVEN       0.18      0.08      0.11        37
+       TANYA       0.25      0.60      0.35       124
+
+   micro avg       0.23      0.23      0.23      1124
+   macro avg       0.23      0.20      0.20      1124
+weighted avg       0.23      0.23      0.21      1124
+
+confusion matrix:
+[[ 3  2  2  2  0  6  0  2  0  0  0  1  0  2  3  2  1 15]
+ [ 0  6  1  1  2 12  3  4  6  0  1  1  0  0  0  1  0  8]
+ [ 0  1  5  0  0  1  1  0  3  0  1  0  1  0  5  6  0  7]
+ [ 0  0  1  4  5  5  2  3  4  1  4  1  1  1  5  2  1  8]
+ [ 0  0  2  1 14  2  1  2  2  4  1  1  0  1  2  4  0  5]
+ [ 0  6  4  2  4 23  1  5  1  3  5  5  0  4  3  7  2 26]
+ [ 0  3  1  3  1  7 10  2  8  2  4  8  4  4  2  9  2 15]
+ [ 0  2  0  0  2 12  3 22  4  0  4  2  0  2  1  4  0 18]
+ [ 0  1  4  0  1 10  2  0 25  3  2  0  1  3  1  3  0 17]
+ [ 0  1  0  2  7  1  1  3  5 11  3  1  2  3  0  2  0  9]
+ [ 0  1  2  0  4  7  1  2  0  3 11  3  3  2  5  2  0  7]
+ [ 1  2  0  1  2  3  2  2  1  1  1 13  3  0  3  3  2 12]
+ [ 0  0  1  0  1  5  4  3  2  1  2  5  6  1  4  5  0 16]
+ [ 2  1  2  2  1  6  4  2 11  0  2  2  0  3  3  5  2 15]
+ [ 1  1  5  1  4  7  1  1  5  3  1  2  1  2 13  8  1 16]
+ [ 1  0  4  2  2  7  2  0  2  1  2  3  3  1  2 13  2 25]
+ [ 0  2  2  0  1  7  3  2  0  0  1  0  2  1  2  2  3  9]
+ [ 1  5  5  0  2 10  8  3  3  0  3  2  0  3  3  0  1 75]]
+ SVM DISCRETE Accuracy: 23.13%
+Mis-classification error for SVM DISCRETE : 18.18%
+              precision    recall  f1-score   support
+
+     BRADLEY       0.33      0.02      0.05        41
+   CHRISTIAN       0.11      0.07      0.08        46
+       CLARE       0.14      0.10      0.11        31
+       GARRY       0.20      0.04      0.07        48
+     HEATHER       0.27      0.24      0.25        42
+         IAN       0.14      0.27      0.18       101
+        JACK       0.19      0.12      0.15        85
+        JANE       0.33      0.25      0.29        76
+         MAX       0.26      0.30      0.28        73
+       MINTY       0.43      0.12      0.18        51
+        PHIL       0.25      0.15      0.19        53
+      RONNIE       0.39      0.17      0.24        52
+        ROXY       0.12      0.02      0.03        56
+        SEAN       0.29      0.08      0.12        63
+     SHIRLEY       0.34      0.15      0.21        73
+      STACEY       0.19      0.12      0.15        72
+      STEVEN       0.33      0.05      0.09        37
+       TANYA       0.17      0.62      0.27       124
+
+   micro avg       0.20      0.20      0.20      1124
+   macro avg       0.25      0.16      0.16      1124
+weighted avg       0.24      0.20      0.18      1124
+
+confusion matrix:
+[[ 1  1  1  1  0 10  1  2  4  0  0  1  0  0  2  0  1 16]
+ [ 0  3  0  1  1 11  3  3  6  0  1  1  0  0  0  1  0 15]
+ [ 0  0  3  0  0  8  1  1  3  0  0  0  0  0  1  0  0 14]
+ [ 0  1  0  2  4  9  2  2  8  0  3  0  0  0  1  5  0 11]
+ [ 0  0  1  0 10  5  2  3  2  2  0  0  0  0  1  2  0 14]
+ [ 1  6  3  2  3 27  3  2  3  0  1  0  0  1  1  5  0 43]
+ [ 0  3  1  0  1 13 10  0  4  0  5  3  2  2  0  3  0 38]
+ [ 0  1  1  0  0 17  1 19  4  0  1  0  0  1  1  2  0 28]
+ [ 0  1  1  0  3 12  4  2 22  1  1  0  0  1  1  0  0 24]
+ [ 0  2  0  2  5  6  2  3  3  6  3  1  0  1  1  2  0 14]
+ [ 0  1  1  0  2 11  2  2  4  0  8  0  0  0  3  1  0 18]
+ [ 0  0  0  0  1  9  1  1  2  0  3  9  2  1  0  2  1 20]
+ [ 0  0  1  1  1 10  6  3  1  1  0  3  1  0  3  1  1 23]
+ [ 0  1  0  1  2  8  2  2  6  0  2  2  0  5  0  5  0 27]
+ [ 1  1  1  0  2 12  1  4  3  3  1  1  2  2 11  5  0 23]
+ [ 0  3  4  0  1  9  2  2  4  1  2  1  0  1  3  9  0 30]
+ [ 0  0  1  0  0  8  2  3  2  0  1  1  1  0  0  1  2 15]
+ [ 0  4  3  0  1 15  7  3  5  0  0  0  0  2  3  3  1 77]]
+ SVM SVC Accuracy: 20.02%
+Mis-classification error for SVM SVC : 20.00%
+"""
