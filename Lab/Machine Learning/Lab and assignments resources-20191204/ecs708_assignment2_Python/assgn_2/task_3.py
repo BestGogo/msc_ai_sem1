@@ -100,7 +100,7 @@ y_true = np.concatenate((np.zeros((np.sum(phoneme_id==1))),np.ones((np.sum(phone
 # X_phonemes_1_2 = np.zeros((np.sum(phoneme_id==1), 2))
 # X_phonemes_1_2 = np.append(X_full[phoneme_id==1,:],X_full[phoneme_id==2,:],axis =1)
 
-
+print(np.sum(phoneme_id==2))
 
 ########################################/
 

@@ -1,0 +1,86 @@
+N
+ 
+V
+B
+D
+.
+P
+R
+T
+,
+I
+J
+N N
+N  
+  N
+  V
+  D
+  .
+  P
+  R
+  ,
+  I
+  J
+V B
+B  
+B P
+D  
+D T
+.  
+P  
+P R
+R B
+R P
+T  
+,  
+I N
+J  
+J J
+N N  
+N N P
+N   .
+N P  
+  N N
+  V B
+  D T
+  .  
+  P R
+  R B
+  ,  
+  I N
+  J J
+V B  
+V B P
+B P  
+D T  
+P   V
+P   .
+P R P
+R B  
+R P  
+I N  
+J J  
+N N   .
+N N P  
+  N N  
+  V B  
+  V B P
+  D T  
+  P R P
+  R B  
+  I N  
+  J J  
+V B P  
+P   V B
+P R P  
+R P   V
+  N N   .
+  V B P  
+  P R P  
+P   V B P
+P R P   V
+R P   V B
+  P R P   V
+P   V B P  
+P R P   V B
+R P   V B P
